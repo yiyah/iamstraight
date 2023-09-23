@@ -1,10 +1,52 @@
+/* Includes ------------------------------------------------------------------*/
 #include "led.h"
 #include "stm32f1xx_hal.h"
 
+/** @addtogroup BSP
+  * @{
+  */
 
+/** @defgroup LED LED
+  * @brief LED BSP driver
+  * @{
+  */
+
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/** @defgroup LED_Private_Constants LED Private Constants
+  * @{
+  */
+
+/** @defgroup LED_Private_Constants_LED0 LED0
+  * @brief Define the GPIO and work state of LED0
+  * @{
+  */
+#define LED0_PIN            GPIO_PIN_4
+#define LED0_GPIO_Port      GPIOA
+#define LED0_WORK_STATE     GPIO_PIN_SET    /*!< LED ON when set pin */
+/**
+  * @}
+  */
+/**
+  * @}
+  */
+/* Private macro -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
+/** @defgroup LED_Private_Variables LED Private Variables
+  * @{
+  */
 GPIO_TypeDef* LED_PORT[LEDn] = {LED0_GPIO_Port};
 const uint16_t LED_PIN[LEDn] = {LED0_PIN};
 
+/**
+  * @}
+  */
+/* Private function prototypes -----------------------------------------------*/
+/* Private functions ---------------------------------------------------------*/
+/* Exported functions --------------------------------------------------------*/
+/** @defgroup LED_Exported_Functions LED Exported Functions
+  * @{
+  */
 /**
  * @brief Turns selected LED on.
  * @param led_index: Specifies the Led to be set on.
@@ -37,3 +79,14 @@ void BSP_LED_Toggle(Led_TypeDef Led)
 {
   HAL_GPIO_TogglePin(LED_PORT[Led], LED_PIN[Led]);
 }
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
