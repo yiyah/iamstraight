@@ -40,6 +40,7 @@ Src/main.c \
 Src/stm32f1xx_it.c \
 Src/stm32f1xx_hal_msp.c \
 BSP/led/led.c \
+BSP/motor/motor.c \
 BSP/printf/printf.c \
 BSP/printf/syscalls.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c \
@@ -118,6 +119,8 @@ AS_INCLUDES =
 C_INCLUDES =  \
 -IInc \
 -IBSP/led \
+-IBSP/motor \
+-Ilib/ \
 -IDrivers/STM32F1xx_HAL_Driver/Inc \
 -IDrivers/STM32F1xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32F1xx/Include \
@@ -165,6 +168,7 @@ vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR) 
 	$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
+	$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) -E $< -o $@.i
 
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
 	$(AS) -c $(CFLAGS) $< -o $@

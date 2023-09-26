@@ -47,7 +47,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+int l_m, r_m;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -92,19 +92,19 @@ int main(void)
   MX_USART1_UART_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
+  initMotor();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 3600);
-  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 1800);
+  setMotorPWM(3600, 900);
   while (1)
   {
      HAL_Delay(500);
      BSP_LED_Toggle(LED_BLUE);
      printf("hello world!\n");
+    setMotorPWM(l_m, r_m);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
