@@ -48,6 +48,7 @@
 
 /* USER CODE BEGIN PV */
 int l_m, r_m;
+sint16 l_num = 0, r_num = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -91,8 +92,14 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   MX_TIM1_Init();
+  MX_TIM2_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   initMotor();
+  HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_1);
+  HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_2);
+  HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_1);
+  HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -100,11 +107,13 @@ int main(void)
   setMotorPWM(3600, 900);
   while (1)
   {
-     HAL_Delay(500);
+     HAL_Delay(10);
      BSP_LED_Toggle(LED_BLUE);
      printf("hello world!\n");
     setMotorPWM(l_m, r_m);
-
+    l_num = __HAL_TIM_GET_COUNTER(&htim2);
+    r_num = __HAL_TIM_GET_COUNTER(&htim4);
+    printf("l_num = %d, r_num = %d\n", l_num, r_num);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
