@@ -39,10 +39,14 @@ C_SOURCES =  \
 Src/main.c \
 Src/stm32f1xx_it.c \
 Src/stm32f1xx_hal_msp.c \
-BSP/led/led.c \
-BSP/motor/motor.c \
+BSP/LED/led.c \
+BSP/IIC/iic.c \
 BSP/printf/printf.c \
 BSP/printf/syscalls.c \
+BSP/DEBUG/log.c \
+BSP/mpu6050/eMPL/inv_mpu.c \
+BSP/mpu6050/eMPL/inv_mpu_dmp_motion_driver.c \
+BSP/mpu6050/mpu6050.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c \
@@ -118,8 +122,13 @@ AS_INCLUDES =
 # C includes
 C_INCLUDES =  \
 -IInc \
--IBSP/led \
--IBSP/motor \
+-IBSP \
+-IBSP/LED \
+-IBSP/IIC \
+-IBSP/UTIL \
+-IBSP/DEBUG \
+-IBSP/mpu6050/eMPL \
+-IBSP/mpu6050 \
 -Ilib/ \
 -IDrivers/STM32F1xx_HAL_Driver/Inc \
 -IDrivers/STM32F1xx_HAL_Driver/Inc/Legacy \
@@ -188,6 +197,9 @@ $(BUILD_DIR):
 
 download: all
 	openocd -f interface/cmsis-dap.cfg -f target/stm32f1x.cfg -c init -c "halt;flash write_image erase $(shell pwd)/build/${TARGET}.elf" -c reset -c shutdown
+
+doxygen:
+	cd BSP;doxygen doxygen/Doxyfile
 
 #######################################
 # clean up
