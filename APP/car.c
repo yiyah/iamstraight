@@ -1,6 +1,6 @@
 
 /* Includes ------------------------------------------------------------------*/
-#include "bsp.h"
+#include "types.h"
 #include "pid.h"
 
 /** @addtogroup APP
@@ -63,11 +63,9 @@ CAR_TypeDef     IAMSTRAIGHT;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
-
-
 static void calculate_speed()
 {
-    BSP_Get_Encoder_Count_PerUnitTime(&IAMSTRAIGHT.leftWheel.pulse, &IAMSTRAIGHT.rightWheel.pulse);
+    // BSP_Get_Encoder_Count_PerUnitTime(&IAMSTRAIGHT.leftWheel.pulse, &IAMSTRAIGHT.rightWheel.pulse);
     IAMSTRAIGHT.leftWheel.rotationSpeed_rps  = (f32)(IAMSTRAIGHT.leftWheel.pulse * PULSE2ROTATESPEED);
     IAMSTRAIGHT.rightWheel.rotationSpeed_rps = (f32)(IAMSTRAIGHT.rightWheel.pulse * PULSE2ROTATESPEED);
 }

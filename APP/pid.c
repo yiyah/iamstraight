@@ -43,13 +43,13 @@ s16 IPID_Output(s16 target, s16 actual, PID_Typedef pid)
     f32 DOut = 0;
 
 #if DEBUG_PID == 1
-    Pout = pid.Kp * (f32)err * (1 + pid.T / pid.Ti + pid.Td / pid.T);
-    Iout = pid.Kp * (f32)errPrev * (1 + 2 * pid.Td / pid.T);
-    Dout = pid.Kp * pid.Td * (f32)errPPrev / pid.T;
+    POut = pid.Kp * (f32)err * (1 + pid.T / pid.Ti + pid.Td / pid.T);
+    IOut = pid.Kp * (f32)errPrev * (1 + 2 * pid.Td / pid.T);
+    DOut = pid.Kp * pid.Td * (f32)errPPrev / pid.T;
 #else
-    Pout = pid.Kp * (f32)err;
-    Iout = pid.Ki * (f32)errPrev;
-    Dout = pid.Kd * (f32)errPPrev;
+    POut = pid.Kp * (f32)err;
+    IOut = pid.Ki * (f32)errPrev;
+    DOut = pid.Kd * (f32)errPPrev;
 #endif
 
     /* save error */
@@ -57,7 +57,7 @@ s16 IPID_Output(s16 target, s16 actual, PID_Typedef pid)
     errPrev = err;
 
     /* output_now = output_prev + Δuk */
-    output = output + (s16)(Pout - Iout + Dout);
+    output = output + (s16)(POut - IOut + DOut);
     return output;
 }
 
@@ -80,17 +80,17 @@ s16 PPID_Output(s16 target, s16 actual, PID_Typedef pid)
 
     errSum += err;
 
-    Pout = pid.Kp * (f32)err;
+    POut = pid.Kp * (f32)err;
 #if DEBUG_PID == 1
-    Iout = pid.Kp * pid.T * (f32)errSum / pid.Ti;
-    Dout = pid.Kp * pid.Td * (f32)(err - errPrev) / pid.T;
+    IOut = pid.Kp * pid.T * (f32)errSum / pid.Ti;
+    DOut = pid.Kp * pid.Td * (f32)(err - errPrev) / pid.T;
 #else
-    Iout = pid.Ki * (f32)errSum;
-    Dout = pid.Kd * (f32)(err - errPrev);
+    IOut = pid.Ki * (f32)errSum;
+    DOut = pid.Kd * (f32)(err - errPrev);
 #endif
 
     errPrev = err;
-    output = (s16)(Pout + Iout + Dout);
+    output = (s16)(POut + IOut + DOut);
     return output;
 }
 /**
