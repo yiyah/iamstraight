@@ -3,6 +3,7 @@ BUILD_DIR = build
 
 # This must befoe include BSP/Makefile
 # use to generate the output file(not use "all")
+.PHONY: OUTPUT
 OUTPUT: $(BUILD_DIR)/$(PROJECT).elf \
 $(BUILD_DIR)/$(PROJECT).hex \
 $(BUILD_DIR)/$(PROJECT).bin
@@ -41,3 +42,6 @@ LDSCRIPT = BSP/STM32F103C8Tx_FLASH.ld
 $(BUILD_DIR)/$(PROJECT).elf: $(OBJECTS) Makefile
 	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
 	$(SZ) $@
+
+dl: OUTPUT
+	openocd -f interface/cmsis-dap.cfg -f target/stm32f1x.cfg -c "transport select swd" -c init -c "reset halt;wait_halt;flash write_image erase $(shell pwd)/build/${PROJECT}.elf" -c reset -c shutdown
