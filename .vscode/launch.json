@@ -1,0 +1,24 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Cortex Debug",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/${config:projectName}.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "runToEntryPoint": "Reset_Handler",
+            "servertype": "openocd",
+            "preLaunchTask": "build",
+            "svdFile": "${workspaceFolder}/BSP/debug_env/svd/STM32F103.svd",
+            "interface": "swd",
+            "configFiles": [
+                "interface/cmsis-dap.cfg",
+                "target/stm32f1x.cfg"
+            ]
+        }
+    ]
+}

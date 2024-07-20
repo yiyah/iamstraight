@@ -1,4 +1,4 @@
-PROJECT := imstraight
+PROJECT := iamstraight
 BUILD_DIR = build
 
 # This must befoe include BSP/Makefile
@@ -44,4 +44,5 @@ $(BUILD_DIR)/$(PROJECT).elf: $(OBJECTS) Makefile
 	$(SZ) $@
 
 dl: OUTPUT
-	openocd -f interface/cmsis-dap.cfg -f target/stm32f1x.cfg -c "transport select swd" -c init -c "reset halt;wait_halt;flash write_image erase $(shell pwd)/build/${PROJECT}.elf" -c reset -c shutdown
+# openocd -f interface/cmsis-dap.cfg -f target/stm32f1x.cfg -c "transport select swd" -c init -c "reset halt;wait_halt;flash write_image erase $(shell pwd)/build/${PROJECT}.elf" -c reset -c shutdown
+	openocd -f interface/cmsis-dap.cfg -f target/stm32f1x.cfg -c "transport select swd" -c init -c "reset halt" -c "wait_halt" -c "flash write_image erase $(shell pwd)/build/${PROJECT}.elf" -c reset -c shutdown

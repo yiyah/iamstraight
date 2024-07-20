@@ -1,3 +1,6 @@
 {
-    "projectName": "iamstraight"
+    "projectName": "iamstraight",
+    "conventionalCommits.scopes": [
+        "VSCODE"
+    ]
 }
