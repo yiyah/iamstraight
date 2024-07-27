@@ -18,7 +18,8 @@ include BSP/Makefile
 BSP_C_SOURCES = $(addprefix BSP/, $(C_SOURCES))
 APP_C_SOURCES = \
 APP/car.c \
-APP/pid.c
+APP/pid.c \
+APP/set_params.c \
 
 C_SOURCES := $(BSP_C_SOURCES) $(APP_C_SOURCES)
 vpath %.c $(sort $(dir $(C_SOURCES)))
