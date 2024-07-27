@@ -1,6 +1,31 @@
 {
     "projectName": "iamstraight",
     "conventionalCommits.scopes": [
-        "VSCODE"
-    ]
+        "VSCODE",
+        "ENCODER",
+        "MOTOR",
+        "UART",
+        "RECEIVE",
+        "DEBUG"
+    ],
+    "http.proxy": "http://127.0.0.1:7890",
+    "https.proxy": "http://127.0.0.1:7890",
+    "http.proxyStrictSSL": false,
+    "files.associations": {
+        "ios": "c",
+        "stm32f1xx_hal.h": "c",
+        "stm32f1xx_hal_conf.h": "c",
+        "stm32f1xx_hal_uart.h": "c",
+        "stm32f1xx_hal_def.h": "c",
+        "tim.h": "c",
+        "main.h": "c",
+        "stm32f1xx_it.h": "c",
+        "bsp.h": "c",
+        "stdio.h": "c",
+        "bsp_conf.h": "c"
+    },
+    "commentTranslate.source": "Google",
+    "commentTranslate.targetLanguage": "zh-CN",
+    "cortex-debug.variableUseNaturalFormat": false,
+    "commentTranslate.hover.enabled": false
 }
