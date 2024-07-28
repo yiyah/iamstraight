@@ -15,7 +15,6 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 
-#define DEBUG_PID 1
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -38,18 +37,14 @@ s16 IPID_Output(s16 target, s16 actual, PID_Typedef pid)
     static s16 errPPrev = 0;
     static s16 output = 0;
 
-    f32 POut = 0;
-    f32 IOut = 0;
-    f32 DOut = 0;
-
 #if DEBUG_PID == 1
-    POut = pid.Kp * (f32)err * (1 + pid.T / pid.Ti + pid.Td / pid.T);
-    IOut = pid.Kp * (f32)errPrev * (1 + 2 * pid.Td / pid.T);
-    DOut = pid.Kp * pid.Td * (f32)errPPrev / pid.T;
+    pid.POut = pid.Kp * (f32)err * (1 + pid.T / pid.Ti + pid.Td / pid.T);
+    pid.IOut = pid.Kp * (f32)errPrev * (1 + 2 * pid.Td / pid.T);
+    pid.DOut = pid.Kp * pid.Td * (f32)errPPrev / pid.T;
 #else
-    POut = pid.Kp * (f32)err;
-    IOut = pid.Ki * (f32)errPrev;
-    DOut = pid.Kd * (f32)errPPrev;
+    pid.POut = pid.Kp * (f32)err;
+    pid.IOut = pid.Ki * (f32)errPrev;
+    pid.DOut = pid.Kd * (f32)errPPrev;
 #endif
 
     /* save error */
@@ -57,7 +52,7 @@ s16 IPID_Output(s16 target, s16 actual, PID_Typedef pid)
     errPrev = err;
 
     /* output_now = output_prev + Δuk */
-    output = output + (s16)(POut - IOut + DOut);
+    output = output + (s16)(pid.POut - pid.IOut + pid.DOut);
     return output;
 }
 
@@ -67,30 +62,26 @@ s16 IPID_Output(s16 target, s16 actual, PID_Typedef pid)
  * @param   target 
  * @param   actual 
  */
-s16 PPID_Output(s16 target, s16 actual, PID_Typedef pid)
+s16 PPID_Output(s16 target, s16 actual, PID_Typedef *pid)
 {
     s16 err = target - actual;
     static s16 errPrev = 0;
     static s16 errSum = 0;
     s16 output = 0;
 
-    f32 POut = 0;
-    f32 IOut = 0;
-    f32 DOut = 0;
-
     errSum += err;
 
-    POut = pid.Kp * (f32)err;
+    (*pid).POut = (*pid).Kp * (f32)err;
 #if DEBUG_PID == 1
-    IOut = pid.Kp * pid.T * (f32)errSum / pid.Ti;
-    DOut = pid.Kp * pid.Td * (f32)(err - errPrev) / pid.T;
+    (*pid).IOut = (*pid).Kp * (*pid).T * (f32)errSum / (*pid).Ti;
+    (*pid).DOut = (*pid).Kp * (*pid).Td * (f32)(err - errPrev) / (*pid).T;
 #else
-    IOut = pid.Ki * (f32)errSum;
-    DOut = pid.Kd * (f32)(err - errPrev);
+    (*pid).IOut = (*pid).Ki * (f32)errSum;
+    (*pid).DOut = (*pid).Kd * (f32)(err - errPrev);
 #endif
 
     errPrev = err;
-    output = (s16)(POut + IOut + DOut);
+    output = (s16)((*pid).POut + (*pid).IOut + (*pid).DOut);
     return output;
 }
 /**

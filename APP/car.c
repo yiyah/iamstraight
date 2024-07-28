@@ -1,6 +1,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "types.h"
+#include "set_params.h"
 #include "pid.h"
 
 /** @addtogroup APP
@@ -16,17 +17,16 @@
 
 typedef struct
 {
-    u16     diameter_mm;                /*!< The diamete of wheel, unit: mm */
-    s16     pulse;                      /*!< The pulse of wheel */
-    f32     rotationSpeed_rps;          /*!< The rotation speed of wheel, unit: revolutions per second */
+    u16             diameter_mm;                /*!< The diamete of wheel, unit: mm */
+    s16             pulse;                      /*!< The pulse of wheel */
+    f32             rotationSpeed_rps;          /*!< The rotation speed of wheel, unit: revolutions per second */
+    PID_Typedef     velocityPID;
 } WHEEL_TypeDef;
-
 
 typedef struct
 {
     WHEEL_TypeDef   leftWheel;
     WHEEL_TypeDef   rightWheel;
-    PID_Typedef     velocityPID;
     void            (*pControl)();
 } CAR_TypeDef;
 
@@ -54,11 +54,12 @@ typedef struct
 
 #define     PID_SAMPLETIME_T    PERIODOFTASK
 #define     PID_VELOCITY_Kp     1.0F
-#define     PID_VELOCITY_Ti     0.0F
+#define     PID_VELOCITY_Ti     100000.0F
 #define     PID_VELOCITY_Td     0.0F
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+
 CAR_TypeDef     IAMSTRAIGHT;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -70,26 +71,51 @@ static void calculate_speed()
     IAMSTRAIGHT.rightWheel.rotationSpeed_rps = (f32)(IAMSTRAIGHT.rightWheel.pulse * PULSE2ROTATESPEED);
 }
 
-void control(s16 *l_curPulse, s16 *r_curPulse)
+/**
+ * @brief 
+ * target(5ms): max:48 -- 7200pwm
+ *          5 -- 1000pwm
+ *          1 -- 200pwm
+ * @param l_targetPulse 
+ * @param r_targetPulse 
+ * @param l_curPulse 
+ * @param r_curPulse 
+ * @param l_output 
+ * @param r_output 
+ */
+void control(const s16 l_targetPulse, const s16 r_targetPulse,
+             const s16 l_curPulse, const s16 r_curPulse,
+             s16 *l_output, s16 *r_output)
 {
-    calculate_speed();
-    *l_curPulse = IAMSTRAIGHT.leftWheel.pulse;
-    *r_curPulse = IAMSTRAIGHT.rightWheel.pulse;
-    // PID_Output(0, IAMSTRAIGHT.leftWheel.pulse);
-    // PID_Output(0, IAMSTRAIGHT.rightWheel.pulse);
-    // BSP_SetMotorPWMPulse(l_pulse, r_pulse);
+    IAMSTRAIGHT.leftWheel.pulse  = l_curPulse;
+    IAMSTRAIGHT.rightWheel.pulse = r_curPulse;
+    // calculate_speed();
+
+    *l_output = PPID_Output(l_targetPulse, IAMSTRAIGHT.leftWheel.pulse, &IAMSTRAIGHT.leftWheel.velocityPID);
+    *r_output = PPID_Output(r_targetPulse, IAMSTRAIGHT.rightWheel.pulse, &IAMSTRAIGHT.rightWheel.velocityPID);
 }
 /* Exported functions --------------------------------------------------------*/
 void car_Init()
 {
     IAMSTRAIGHT.leftWheel.diameter_mm  = 800;
     IAMSTRAIGHT.rightWheel.diameter_mm = 800;
-    IAMSTRAIGHT.pControl = control;
-    IAMSTRAIGHT.velocityPID.T  = PID_SAMPLETIME_T;
-    IAMSTRAIGHT.velocityPID.Kp = PID_VELOCITY_Kp;
-    IAMSTRAIGHT.velocityPID.Ti = PID_VELOCITY_Ti;
-    IAMSTRAIGHT.velocityPID.Td = PID_VELOCITY_Td;
+    // IAMSTRAIGHT.pControl = control;
+    IAMSTRAIGHT.leftWheel.velocityPID.T  = PID_SAMPLETIME_T;
+    IAMSTRAIGHT.leftWheel.velocityPID.Kp = PID_VELOCITY_Kp;
+    IAMSTRAIGHT.leftWheel.velocityPID.Ti = PID_VELOCITY_Ti;
+    IAMSTRAIGHT.leftWheel.velocityPID.Td = PID_VELOCITY_Td;
+
+    IAMSTRAIGHT.rightWheel.velocityPID.T  = PID_SAMPLETIME_T;
+    IAMSTRAIGHT.rightWheel.velocityPID.Kp = PID_VELOCITY_Kp;
+    IAMSTRAIGHT.rightWheel.velocityPID.Ti = PID_VELOCITY_Ti;
+    IAMSTRAIGHT.rightWheel.velocityPID.Td = PID_VELOCITY_Td;
 }
+
+void car_app(const u8 *pdata, u8 len)
+{
+    vSetParams(pdata, len);
+}
+
 /**
   * @}
   */
