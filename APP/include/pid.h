@@ -21,12 +21,16 @@ typedef struct
     f32 Ki;
     f32 kd;
 #endif /* DEBUG_PID == 1 */
+    s16 errPrev;            /* for IPID, PPID */
+    s16 errPPrev;           /* for IPID */
+    s16 errSum;             /* for PPID */
+    s16 output;             /* for IPID, PPID */
 } PID_Typedef;
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
 
-s16 IPID_Output(s16 target, s16 actual, PID_Typedef pid);
+s16 IPID_Output(s16 target, s16 actual, PID_Typedef *pid);
 s16 PPID_Output(s16 target, s16 actual, PID_Typedef *pid);
 
 /* Private types -------------------------------------------------------------*/

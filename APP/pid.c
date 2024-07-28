@@ -30,30 +30,27 @@
  * @param   target 
  * @param   actual 
  */
-s16 IPID_Output(s16 target, s16 actual, PID_Typedef pid)
+s16 IPID_Output(s16 target, s16 actual, PID_Typedef *pid)
 {
     s16 err = target - actual;
-    static s16 errPrev = 0;
-    static s16 errPPrev = 0;
-    static s16 output = 0;
 
 #if DEBUG_PID == 1
-    pid.POut = pid.Kp * (f32)err * (1 + pid.T / pid.Ti + pid.Td / pid.T);
-    pid.IOut = pid.Kp * (f32)errPrev * (1 + 2 * pid.Td / pid.T);
-    pid.DOut = pid.Kp * pid.Td * (f32)errPPrev / pid.T;
+    (*pid).POut = (*pid).Kp * (f32)err * (1 + (*pid).T / (*pid).Ti + (*pid).Td / (*pid).T);
+    (*pid).IOut = (*pid).Kp * (f32)(*pid).errPrev * (1 + 2 * (*pid).Td / (*pid).T);
+    (*pid).DOut = (*pid).Kp * (*pid).Td * (f32)(*pid).errPPrev / (*pid).T;
 #else
-    pid.POut = pid.Kp * (f32)err;
-    pid.IOut = pid.Ki * (f32)errPrev;
-    pid.DOut = pid.Kd * (f32)errPPrev;
+    (*pid).POut = (*pid).Kp * (f32)err;
+    (*pid).IOut = (*pid).Ki * (f32)(*pid).errPrev;
+    (*pid).DOut = (*pid).Kd * (f32)(*pid).errPPrev;
 #endif
 
     /* save error */
-    errPPrev = errPrev;
-    errPrev = err;
+    (*pid).errPPrev = (*pid).errPrev;
+    (*pid).errPrev = err;
 
     /* output_now = output_prev + Δuk */
-    output = output + (s16)(pid.POut - pid.IOut + pid.DOut);
-    return output;
+    (*pid).output = (*pid).output + (s16)((*pid).POut - (*pid).IOut + (*pid).DOut);
+    return (*pid).output;
 }
 
 /**
@@ -65,24 +62,21 @@ s16 IPID_Output(s16 target, s16 actual, PID_Typedef pid)
 s16 PPID_Output(s16 target, s16 actual, PID_Typedef *pid)
 {
     s16 err = target - actual;
-    static s16 errPrev = 0;
-    static s16 errSum = 0;
-    s16 output = 0;
 
-    errSum += err;
+    (*pid).errSum += err;
 
     (*pid).POut = (*pid).Kp * (f32)err;
 #if DEBUG_PID == 1
-    (*pid).IOut = (*pid).Kp * (*pid).T * (f32)errSum / (*pid).Ti;
-    (*pid).DOut = (*pid).Kp * (*pid).Td * (f32)(err - errPrev) / (*pid).T;
+    (*pid).IOut = (*pid).Kp * (*pid).T * (f32)(*pid).errSum / (*pid).Ti;
+    (*pid).DOut = (*pid).Kp * (*pid).Td * (f32)(err - (*pid).errPrev) / (*pid).T;
 #else
-    (*pid).IOut = (*pid).Ki * (f32)errSum;
-    (*pid).DOut = (*pid).Kd * (f32)(err - errPrev);
+    (*pid).IOut = (*pid).Ki * (f32)(*pid).errSum;
+    (*pid).DOut = (*pid).Kd * (f32)(err - (*pid).errPrev);
 #endif
 
-    errPrev = err;
-    output = (s16)((*pid).POut + (*pid).IOut + (*pid).DOut);
-    return output;
+    (*pid).errPrev = err;
+    (*pid).output = (s16)((*pid).POut + (*pid).IOut + (*pid).DOut);
+    return (*pid).output;
 }
 /**
   * @}
