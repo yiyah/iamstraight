@@ -16,6 +16,8 @@
 #define ASCII_VALUE_0   48u
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+
+PTRFUNC pFunc = NULL;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -32,7 +34,7 @@ f32 f32ParseFloatFromString(const u8 *pdata, u8 len)
     s8 valSign = 1;
     u8 lenOfInteger = len - 3 - 2;      /*!< 3 is the length of the command part,
                                              2 is the length of the fractional part */
-    u16 integerPart = 0, fractionPart = 0, tenPower = 1;
+    u16 integerPart = 0, fractionPart = 0;
 
     /* Check if it is a negative value */
     if (pdata[3] == '-')
@@ -46,7 +48,7 @@ f32 f32ParseFloatFromString(const u8 *pdata, u8 len)
     }
 
     /* parsing integer part */
-    for (u8 i = 0; i < lenOfInteger; i++)
+    for (u8 i = 0, tenPower = 1; i < lenOfInteger; i++)
     {
         /**
          * 2 is the length of the fractional part
@@ -57,7 +59,7 @@ f32 f32ParseFloatFromString(const u8 *pdata, u8 len)
     }
 
     /* parsing fractional part */
-    for (u8 i = 0; i < 2; i++)
+    for (u8 i = 0, tenPower = 1; i < 2; i++)
     {
         fractionPart += ((*(pdata+((len-1)-i))-ASCII_VALUE_0) * tenPower);
         tenPower *= 10;
@@ -68,43 +70,52 @@ f32 f32ParseFloatFromString(const u8 *pdata, u8 len)
 
 /* Exported functions --------------------------------------------------------*/
 
-s32 vSetParams(const u8 *pdata, u8 len)
+void PARAMS_vRegisterCallBackFunc(PTRFUNC pf)
 {
-    s32 res = 0;
+    pFunc = pf;
+}
 
-    if (len > 3)
+s32 PARAMS_vSetParams(const u8 *pdata, u8 len)
+{
+    s32 res = -1;
+
+    if (pFunc != NULL)
     {
-        if ((pdata[0] == ':')
-         && (pdata[2] == ':'))
+        if (len > 3)
         {
-            f32 value = f32ParseFloatFromString(pdata, len);
-            switch (pdata[1])
+            if ((pdata[0] == ':')
+            && (pdata[2] == ':'))
             {
-            case 'p':
-            case 'P':
-                break;
-            case 'i':
-            case 'I':
-                break;
-            case 'd':
-            case 'D':
-                break;
-            default:
-                break;
+                f32 value = f32ParseFloatFromString(pdata, len);
+                switch (pdata[1])
+                {
+                case 'p':
+                case 'P':
+                case 'i':
+                case 'I':
+                case 'd':
+                case 'D':
+                    (*pFunc)(pdata[1], value);
+                    break;
+                default:
+                    break;
+                }
+            }
+            else
+            {
+                /* pdata is not command, do nothing */
+                /* res = -1; */
             }
         }
         else
         {
-            /**
-             * pdata is not command
-             */
-            res = -1;
+            /* do nothing */
+            /* res = -1; */
         }
     }
     else
     {
-        /* do nothing */
-        res = -1;
+        /* pFunc is not initialized, do nothing */
     }
     return res;
 }

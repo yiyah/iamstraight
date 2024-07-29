@@ -94,6 +94,31 @@ void control(const s16 l_targetPulse, const s16 r_targetPulse,
     *l_output = PPID_Output(l_targetPulse, IAMSTRAIGHT.leftWheel.pulse, &IAMSTRAIGHT.leftWheel.velocityPID);
     *r_output = PPID_Output(r_targetPulse, IAMSTRAIGHT.rightWheel.pulse, &IAMSTRAIGHT.rightWheel.velocityPID);
 }
+
+void vSetParams(u8 cmd, f32 val)
+{
+    switch (cmd)
+    {
+    case 'p':
+    case 'P':
+        IAMSTRAIGHT.leftWheel.velocityPID.Kp = val;
+        IAMSTRAIGHT.rightWheel.velocityPID.Kp = val;
+        break;
+    case 'i':
+    case 'I':
+        IAMSTRAIGHT.leftWheel.velocityPID.Ti = val;
+        IAMSTRAIGHT.rightWheel.velocityPID.Ti = val;
+        break;
+    case 'd':
+    case 'D':
+        IAMSTRAIGHT.leftWheel.velocityPID.Td = val;
+        IAMSTRAIGHT.rightWheel.velocityPID.Td = val; 
+        break;
+    default:
+        break;
+    }
+}
+
 /* Exported functions --------------------------------------------------------*/
 void car_Init()
 {
@@ -109,11 +134,13 @@ void car_Init()
     IAMSTRAIGHT.rightWheel.velocityPID.Kp = PID_VELOCITY_Kp;
     IAMSTRAIGHT.rightWheel.velocityPID.Ti = PID_VELOCITY_Ti;
     IAMSTRAIGHT.rightWheel.velocityPID.Td = PID_VELOCITY_Td;
+
+    PARAMS_vRegisterCallBackFunc(vSetParams);
 }
 
 void car_app(const u8 *pdata, u8 len)
 {
-    vSetParams(pdata, len);
+    PARAMS_vSetParams(pdata, len);
 }
 
 /**
