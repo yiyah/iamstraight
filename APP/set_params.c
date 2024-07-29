@@ -18,40 +18,76 @@
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
+
+/**
+ * @brief 
+ * @details data frame are below list:
+ *        1178.54's data frame is: :p:117854
+ *        -1178.54's data frame is: :p:-117854
+ * @param pdata 
+ * @param len 
+ */
+f32 f32ParseFloatFromString(const u8 *pdata, u8 len)
+{
+    s8 valSign = 1;
+    u8 lenOfInteger = len - 3 - 2;      /*!< 3 is the length of the command part,
+                                             2 is the length of the fractional part */
+    u16 integerPart = 0, fractionPart = 0, tenPower = 1;
+
+    /* Check if it is a negative value */
+    if (pdata[3] == '-')
+    {
+        lenOfInteger--;                 /* Length contains "-" */
+        valSign = -1;
+    }
+    else
+    {
+        /* it is positive, do nothing */
+    }
+
+    /* parsing integer part */
+    for (u8 i = 0; i < lenOfInteger; i++)
+    {
+        /**
+         * 2 is the length of the fractional part
+         * Minus 1 is used to get the index
+         */
+        integerPart += ((*(pdata+((len-2-1)-i))-ASCII_VALUE_0) * tenPower);
+        tenPower *= 10;
+    }
+
+    /* parsing fractional part */
+    for (u8 i = 0; i < 2; i++)
+    {
+        fractionPart += ((*(pdata+((len-1)-i))-ASCII_VALUE_0) * tenPower);
+        tenPower *= 10;
+    }
+
+    return (valSign*((f32)integerPart + (fractionPart*0.01F)));
+}
+
 /* Exported functions --------------------------------------------------------*/
 
 s32 vSetParams(const u8 *pdata, u8 len)
 {
     s32 res = 0;
+
     if (len > 3)
     {
-        /** data frame is:
-         *  :p:100
-         *  :i:5
-         */
         if ((pdata[0] == ':')
          && (pdata[2] == ':'))
         {
-            u8 paramsLen = len - 3;
-            u16 param = 0, tenPower = 1;
-            for (u8 i = 0; i < paramsLen; i++)
-            {
-                param += ((*(pdata+((len-1)-i))-ASCII_VALUE_0) * tenPower);
-                tenPower *= 10;
-            }
+            f32 value = f32ParseFloatFromString(pdata, len);
             switch (pdata[1])
             {
             case 'p':
             case 'P':
-                res = param;
                 break;
             case 'i':
             case 'I':
-                res = param;
                 break;
             case 'd':
             case 'D':
-                res = param;
                 break;
             default:
                 break;
