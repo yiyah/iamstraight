@@ -61,6 +61,8 @@ typedef struct
 /* Private variables ---------------------------------------------------------*/
 
 CAR_TypeDef     IAMSTRAIGHT;
+extern s16 s16l_target, s16r_target;
+
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -113,6 +115,14 @@ void vSetParams(u8 cmd, f32 val)
     case 'D':
         IAMSTRAIGHT.leftWheel.velocityPID.Td = val;
         IAMSTRAIGHT.rightWheel.velocityPID.Td = val; 
+        break;
+    case 'l':
+    case 'L':
+        s16l_target = (s16)val;
+        break;
+    case 'r':
+    case 'R':
+        s16r_target = (s16)val; 
         break;
     default:
         break;
