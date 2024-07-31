@@ -35,6 +35,7 @@ f32 f32ParseFloatFromString(const u8 *pdata, u8 len)
     u8 lenOfInteger = len - 3 - 2;      /*!< 3 is the length of the command part,
                                              2 is the length of the fractional part */
     u16 integerPart = 0, fractionPart = 0;
+    u16 tenPower = 1;
 
     /* Check if it is a negative value */
     if (pdata[3] == '-')
@@ -48,7 +49,8 @@ f32 f32ParseFloatFromString(const u8 *pdata, u8 len)
     }
 
     /* parsing integer part */
-    for (u8 i = 0, tenPower = 1; i < lenOfInteger; i++)
+    tenPower = 1;
+    for (u8 i = 0; i < lenOfInteger; i++)
     {
         /**
          * 2 is the length of the fractional part
@@ -59,6 +61,7 @@ f32 f32ParseFloatFromString(const u8 *pdata, u8 len)
     }
 
     /* parsing fractional part */
+    tenPower = 1;
     for (u8 i = 0, tenPower = 1; i < 2; i++)
     {
         fractionPart += ((*(pdata+((len-1)-i))-ASCII_VALUE_0) * tenPower);
