@@ -33,6 +33,7 @@
 s16 IPID_Output(s16 target, s16 actual, PID_Typedef *pid)
 {
     s16 err = target - actual;
+    f32 f32output = 0.0F;
 
 #if DEBUG_PID == 1
     (*pid).POut = (*pid).Kp * (f32)err * (1 + (*pid).T / (*pid).Ti + (*pid).Td / (*pid).T);
@@ -49,8 +50,24 @@ s16 IPID_Output(s16 target, s16 actual, PID_Typedef *pid)
     (*pid).errPrev = err;
 
     /* output_now = output_prev + Δuk */
-    (*pid).output = (*pid).output + (s16)((*pid).POut - (*pid).IOut + (*pid).DOut);
-    return (*pid).output;
+    f32output = pid->s16Output + ((*pid).POut - (*pid).IOut + (*pid).DOut);
+
+    /* check the max/min value */
+    if (f32output > pid->u16OutputMax)
+    {
+        pid->s16Output = pid->u16OutputMax;
+    }
+    else if (f32output < -pid->u16OutputMax)
+    {
+        pid->s16Output = -pid->u16OutputMax;
+    }
+    else
+    {
+        /* f32output in range: [-Max, Max] */
+        pid->s16Output = (s16)f32output;
+    }
+
+    return pid->s16Output;
 }
 
 /**
@@ -62,6 +79,7 @@ s16 IPID_Output(s16 target, s16 actual, PID_Typedef *pid)
 s16 PPID_Output(s16 target, s16 actual, PID_Typedef *pid)
 {
     s16 err = target - actual;
+    f32 f32output = 0.0F;
 
     (*pid).errSum += err;
 
@@ -75,8 +93,24 @@ s16 PPID_Output(s16 target, s16 actual, PID_Typedef *pid)
 #endif
 
     (*pid).errPrev = err;
-    (*pid).output = (s16)((*pid).POut + (*pid).IOut + (*pid).DOut);
-    return (*pid).output;
+    f32output = (*pid).POut + (*pid).IOut + (*pid).DOut;
+    
+    /* check the max/min value */
+    if (f32output > pid->u16OutputMax)
+    {
+        pid->s16Output = pid->u16OutputMax;
+    }
+    else if (f32output < -pid->u16OutputMax)
+    {
+        pid->s16Output = -pid->u16OutputMax;
+    }
+    else
+    {
+        /* f32output in range: [-Max, Max] */
+        pid->s16Output = (s16)f32output;
+    }
+
+    return pid->s16Output;
 }
 /**
   * @}
