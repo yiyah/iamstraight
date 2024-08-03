@@ -30,7 +30,7 @@
  * @param   target 
  * @param   actual 
  */
-s16 IPID_Output(s16 target, s16 actual, PID_Typedef *pid)
+f32 IPID_Output(f32 target, f32 actual, PID_Typedef *pid)
 {
     s16 err = target - actual;
     f32 f32output = 0.0F;
@@ -50,24 +50,24 @@ s16 IPID_Output(s16 target, s16 actual, PID_Typedef *pid)
     (*pid).errPrev = err;
 
     /* output_now = output_prev + Δuk */
-    f32output = pid->s16Output + ((*pid).POut - (*pid).IOut + (*pid).DOut);
+    f32output = pid->f32Output + ((*pid).POut - (*pid).IOut + (*pid).DOut);
 
     /* check the max/min value */
-    if (f32output > pid->u16OutputMax)
+    if (f32output > pid->f32OutputMax)
     {
-        pid->s16Output = pid->u16OutputMax;
+        pid->f32Output = pid->f32OutputMax;
     }
-    else if (f32output < -pid->u16OutputMax)
+    else if (f32output < -pid->f32OutputMax)
     {
-        pid->s16Output = -pid->u16OutputMax;
+        pid->f32Output = -pid->f32OutputMax;
     }
     else
     {
         /* f32output in range: [-Max, Max] */
-        pid->s16Output = (s16)f32output;
+        pid->f32Output = (s16)f32output;
     }
 
-    return pid->s16Output;
+    return pid->f32Output;
 }
 
 /**
@@ -76,9 +76,9 @@ s16 IPID_Output(s16 target, s16 actual, PID_Typedef *pid)
  * @param   target 
  * @param   actual 
  */
-s16 PPID_Output(s16 target, s16 actual, PID_Typedef *pid)
+f32 PPID_Output(f32 target, f32 actual, PID_Typedef *pid)
 {
-    s16 err = target - actual;
+    f32 err = target - actual;
     f32 f32output = 0.0F;
 
     (*pid).errSum += err;
@@ -92,25 +92,25 @@ s16 PPID_Output(s16 target, s16 actual, PID_Typedef *pid)
     (*pid).DOut = (*pid).Kd * (f32)(err - (*pid).errPrev);
 #endif
 
-    (*pid).errPrev = err;
-    f32output = (*pid).POut + (*pid).IOut + (*pid).DOut;
+    pid->errPrev = err;
+    f32output = pid->POut + pid->IOut + pid->DOut;
     
     /* check the max/min value */
-    if (f32output > pid->u16OutputMax)
+    if (f32output > pid->f32OutputMax)
     {
-        pid->s16Output = pid->u16OutputMax;
+        pid->f32Output = pid->f32OutputMax;
     }
-    else if (f32output < -pid->u16OutputMax)
+    else if (f32output < -pid->f32OutputMax)
     {
-        pid->s16Output = -pid->u16OutputMax;
+        pid->f32Output = -pid->f32OutputMax;
     }
     else
     {
         /* f32output in range: [-Max, Max] */
-        pid->s16Output = (s16)f32output;
+        pid->f32Output = (s16)f32output;
     }
 
-    return pid->s16Output;
+    return pid->f32Output;
 }
 /**
   * @}

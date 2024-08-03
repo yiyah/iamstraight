@@ -21,18 +21,18 @@ typedef struct
     f32 Ki;                 /* Need to initialize */
     f32 kd;                 /* Need to initialize */
 #endif /* DEBUG_PID == 1 */
-    s16 errPrev;            /* for IPID, PPID */
-    s16 errPPrev;           /* for IPID */
-    s16 errSum;             /* for PPID */
-    s16 s16Output;          /* for IPID, PPID */
-    u16 u16OutputMax;       /* for IPID, PPID. Need to initialize */
+    f32 errPrev;            /* for IPID, PPID */
+    f32 errPPrev;           /* for IPID */
+    f32 errSum;             /* for PPID */
+    f32 f32Output;          /* for IPID, PPID */
+    f32 f32OutputMax;       /* for IPID, PPID. Need to initialize */
 } PID_Typedef;
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
 
-s16 IPID_Output(s16 target, s16 actual, PID_Typedef *pid);
-s16 PPID_Output(s16 target, s16 actual, PID_Typedef *pid);
+f32 IPID_Output(f32 target, f32 actual, PID_Typedef *pid);
+f32 PPID_Output(f32 target, f32 actual, PID_Typedef *pid);
 
 /* Private types -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/

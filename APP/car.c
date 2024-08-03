@@ -57,7 +57,7 @@ typedef struct
 #define     PID_VELOCITY_Ti     100000.0F
 #define     PID_VELOCITY_Td     0.0F
 
-#define     PID_OUTPUT_MAX      7200U
+#define     PID_OUTPUT_MAX      7200.0F
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -142,13 +142,13 @@ void car_Init()
     IAMSTRAIGHT.leftWheel.velocityPID.Kp = PID_VELOCITY_Kp;
     IAMSTRAIGHT.leftWheel.velocityPID.Ti = PID_VELOCITY_Ti;
     IAMSTRAIGHT.leftWheel.velocityPID.Td = PID_VELOCITY_Td;
-    IAMSTRAIGHT.leftWheel.velocityPID.u16OutputMax = PID_OUTPUT_MAX;
+    IAMSTRAIGHT.leftWheel.velocityPID.f32OutputMax = PID_OUTPUT_MAX;
 
     IAMSTRAIGHT.rightWheel.velocityPID.T  = PID_SAMPLETIME_T;
     IAMSTRAIGHT.rightWheel.velocityPID.Kp = PID_VELOCITY_Kp;
     IAMSTRAIGHT.rightWheel.velocityPID.Ti = PID_VELOCITY_Ti;
     IAMSTRAIGHT.rightWheel.velocityPID.Td = PID_VELOCITY_Td;
-    IAMSTRAIGHT.rightWheel.velocityPID.u16OutputMax = PID_OUTPUT_MAX;
+    IAMSTRAIGHT.rightWheel.velocityPID.f32OutputMax = PID_OUTPUT_MAX;
 
     PARAMS_vRegisterCallBackFunc(vSetParams);
 }
