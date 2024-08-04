@@ -3,6 +3,7 @@
 #include "types.h"
 #include "set_params.h"
 #include "pid.h"
+#include "math.h"
 
 /** @addtogroup APP
   * @{
@@ -27,6 +28,7 @@ typedef struct
 {
     WHEEL_TypeDef   leftWheel;
     WHEEL_TypeDef   rightWheel;
+    PID_Typedef     bodyPID;
     void            (*pControl)();
 } CAR_TypeDef;
 
@@ -55,7 +57,7 @@ typedef struct
 #define     PID_SAMPLETIME_T    PERIODOFTASK
 
 /**
- * @brief PID 参数
+ * @brief 速度环 PID 参数
  * 使用 临界比例法 获取的，1020是引起系统震荡的Ku, 100ms 是震荡时两个波峰间的时间间隔
  */
 #define     PID_VELOCITY_Kp     612.0F      /*!< 1020 * 0.6 */
@@ -72,6 +74,13 @@ typedef struct
  *          所以引入了积分分离 下限。
  */
 #define     PID_THRESH_SEP_INTEG 5.0F
+
+/**
+ * @brief 直立环 PID 参数
+ */
+#define     PID_BODY_Kp     0.0F
+#define     PID_BODY_Ti     1000000.0F
+#define     PID_BODY_Td     0.0F
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -166,12 +175,33 @@ void car_Init()
     IAMSTRAIGHT.rightWheel.velocityPID.f32OutputMax = PID_OUTPUT_MAX;
     IAMSTRAIGHT.rightWheel.velocityPID.f32IntegralSepThreshold = PID_THRESH_SEP_INTEG;
 
+    IAMSTRAIGHT.bodyPID.T  = PID_SAMPLETIME_T;
+    IAMSTRAIGHT.bodyPID.Kp = PID_BODY_Kp;
+    IAMSTRAIGHT.bodyPID.Ti = PID_BODY_Ti;
+    IAMSTRAIGHT.bodyPID.Td = PID_BODY_Td;
+    IAMSTRAIGHT.bodyPID.f32OutputMax = PID_OUTPUT_MAX;
+    IAMSTRAIGHT.bodyPID.f32IntegralSepThreshold = PID_THRESH_SEP_INTEG;
     PARAMS_vRegisterCallBackFunc(vSetParams);
 }
 
 void car_app(const u8 *pdata, u8 len)
 {
     PARAMS_vSetParams(pdata, len);
+}
+
+f32 CAR_f32KeepStandUP(f32 f32target, f32 f32curPitch)
+{
+    static f32 f32res = 0.0F;
+    if (fabs(f32curPitch) > 1.0F)
+    {
+        f32res = PPID_Output(f32target, f32curPitch, &IAMSTRAIGHT.bodyPID);
+    }
+    else
+    {
+        /* do nothing */
+    }
+
+    return f32res;
 }
 
 /**

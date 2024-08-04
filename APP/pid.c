@@ -92,6 +92,7 @@ f32 PPID_Output(f32 target, f32 actual, PID_Typedef *pid)
     (*pid).DOut = (*pid).Kd * (f32)(err - (*pid).errPrev);
 #endif
 
+    /* integral separation */
     if (((pid->errSum > -pid->f32IntegralSepThreshold)
         && (pid->errSum < 0.0F))
     || ((pid->errSum < pid->f32IntegralSepThreshold)
