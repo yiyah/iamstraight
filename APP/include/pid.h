@@ -26,6 +26,8 @@ typedef struct
     f32 errSum;             /* for PPID */
     f32 f32Output;          /* for IPID, PPID */
     f32 f32OutputMax;       /* for IPID, PPID. Need to initialize */
+    f32 f32IntegralSepThreshold; /*!< Integral separation threshold,
+                                  for PPID */
 } PID_Typedef;
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/

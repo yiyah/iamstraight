@@ -92,6 +92,18 @@ f32 PPID_Output(f32 target, f32 actual, PID_Typedef *pid)
     (*pid).DOut = (*pid).Kd * (f32)(err - (*pid).errPrev);
 #endif
 
+    if (((pid->errSum > -pid->f32IntegralSepThreshold)
+        && (pid->errSum < 0.0F))
+    || ((pid->errSum < pid->f32IntegralSepThreshold)
+        && (pid->errSum > 0.0F)))
+    {
+        pid->IOut = 0;
+    }
+    else
+    {
+        /* keep pid->IOut */
+    }
+
     pid->errPrev = err;
     f32output = pid->POut + pid->IOut + pid->DOut;
     

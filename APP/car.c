@@ -53,11 +53,25 @@ typedef struct
 #define     PULSE2ROTATESPEED   0.1282F
 
 #define     PID_SAMPLETIME_T    PERIODOFTASK
-#define     PID_VELOCITY_Kp     1.0F
-#define     PID_VELOCITY_Ti     100000.0F
-#define     PID_VELOCITY_Td     0.0F
 
-#define     PID_OUTPUT_MAX      7200.0F
+/**
+ * @brief PID 参数
+ * 使用 临界比例法 获取的，1020是引起系统震荡的Ku, 100ms 是震荡时两个波峰间的时间间隔
+ */
+#define     PID_VELOCITY_Kp     612.0F      /*!< 1020 * 0.6 */
+#define     PID_VELOCITY_Ti     50.0F       /*!< 100ms / 2 */
+#define     PID_VELOCITY_Td     12.5F       /*!< 100ms / 8 */
+
+#define     PID_OUTPUT_MAX      7200.0F     /*!< the motor PWM max pulse */
+
+/**
+ * @brief the threshold of integral separation
+ * @details 当预期值为 0，用手转轮子，发现积分项累积的误差是 [-3, 3]，
+ *          而此时编码器返回的 pulse 是 0，导致误差一直是 0。
+ *          然后 积分项的误差保持非零，一直有输出，轮子就一直再转。
+ *          所以引入了积分分离 下限。
+ */
+#define     PID_THRESH_SEP_INTEG 5.0F
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -143,12 +157,14 @@ void car_Init()
     IAMSTRAIGHT.leftWheel.velocityPID.Ti = PID_VELOCITY_Ti;
     IAMSTRAIGHT.leftWheel.velocityPID.Td = PID_VELOCITY_Td;
     IAMSTRAIGHT.leftWheel.velocityPID.f32OutputMax = PID_OUTPUT_MAX;
+    IAMSTRAIGHT.leftWheel.velocityPID.f32IntegralSepThreshold = PID_THRESH_SEP_INTEG;
 
     IAMSTRAIGHT.rightWheel.velocityPID.T  = PID_SAMPLETIME_T;
     IAMSTRAIGHT.rightWheel.velocityPID.Kp = PID_VELOCITY_Kp;
     IAMSTRAIGHT.rightWheel.velocityPID.Ti = PID_VELOCITY_Ti;
     IAMSTRAIGHT.rightWheel.velocityPID.Td = PID_VELOCITY_Td;
     IAMSTRAIGHT.rightWheel.velocityPID.f32OutputMax = PID_OUTPUT_MAX;
+    IAMSTRAIGHT.rightWheel.velocityPID.f32IntegralSepThreshold = PID_THRESH_SEP_INTEG;
 
     PARAMS_vRegisterCallBackFunc(vSetParams);
 }
