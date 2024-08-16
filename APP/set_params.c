@@ -102,6 +102,9 @@ s32 PARAMS_vSetParams(const u8 *pdata, u8 len)
                 case 'L':
                 case 'r':
                 case 'R':
+                case 'q':
+                case 'w':
+                case 'e':
                     (*pFunc)(pdata[1], value);
                     break;
                 default:

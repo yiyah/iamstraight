@@ -4,6 +4,7 @@
 #include "set_params.h"
 #include "pid.h"
 #include "math.h"
+#include "math.h"
 
 /** @addtogroup APP
   * @{
@@ -78,9 +79,10 @@ typedef struct
 /**
  * @brief 直立环 PID 参数
  */
-#define     PID_BODY_Kp     0.0F
-#define     PID_BODY_Ti     1000000.0F
-#define     PID_BODY_Td     0.0F
+#define     PID_BODY_Kp                 0.0F
+#define     PID_BODY_Ti                 100000000.0F
+#define     PID_BODY_Td                 0.0F
+#define     PID_BODY_OUTPUT_MAX         50.0F     /*!< the motor max pulse */
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -149,6 +151,15 @@ void vSetParams(u8 cmd, f32 val)
     case 'R':
         s16r_target = (s16)val; 
         break;
+    case 'q':
+        IAMSTRAIGHT.bodyPID.Kp = val*0.01;
+        break;
+    case 'w':
+        IAMSTRAIGHT.bodyPID.Ti = val;
+        break;
+    case 'e':
+        IAMSTRAIGHT.bodyPID.Td = val*0.01;
+        break;
     default:
         break;
     }
@@ -179,7 +190,7 @@ void car_Init()
     IAMSTRAIGHT.bodyPID.Kp = PID_BODY_Kp;
     IAMSTRAIGHT.bodyPID.Ti = PID_BODY_Ti;
     IAMSTRAIGHT.bodyPID.Td = PID_BODY_Td;
-    IAMSTRAIGHT.bodyPID.f32OutputMax = PID_OUTPUT_MAX;
+    IAMSTRAIGHT.bodyPID.f32OutputMax = PID_BODY_OUTPUT_MAX;
     IAMSTRAIGHT.bodyPID.f32IntegralSepThreshold = PID_THRESH_SEP_INTEG;
     PARAMS_vRegisterCallBackFunc(vSetParams);
 }
@@ -191,10 +202,11 @@ void car_app(const u8 *pdata, u8 len)
 
 f32 CAR_f32KeepStandUP(f32 f32target, f32 f32curPitch)
 {
-    static f32 f32res = 0.0F;
-    if (fabs(f32curPitch) > 1.0F)
+    f32 f32res = 0.0F;
+    f32 f32abs_curPitch = fabs(f32curPitch);
+    if (f32abs_curPitch > 0.5F && f32abs_curPitch < 25.0F)
     {
-        f32res = PPID_Output(f32target, f32curPitch, &IAMSTRAIGHT.bodyPID);
+        f32res = -PPID_Output(f32target, f32curPitch, &IAMSTRAIGHT.bodyPID);
     }
     else
     {
