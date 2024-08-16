@@ -6,7 +6,13 @@
         "MOTOR",
         "UART",
         "RECEIVE",
-        "DEBUG"
+        "DEBUG",
+        "CONTROL",
+        "CAR",
+        "PID",
+        "SET_PARAMS",
+        "FILTER",
+        "UART"
     ],
     "http.proxy": "http://127.0.0.1:7890",
     "https.proxy": "http://127.0.0.1:7890",
@@ -22,10 +28,16 @@
         "stm32f1xx_it.h": "c",
         "bsp.h": "c",
         "stdio.h": "c",
-        "bsp_conf.h": "c"
+        "bsp_conf.h": "c",
+        "util.h": "c",
+        "filter.h": "c",
+        "encoder.h": "c",
+        "cstring": "c",
+        "locale": "c",
+        "types.h": "c"
     },
     "commentTranslate.source": "Google",
     "commentTranslate.targetLanguage": "zh-CN",
-    "cortex-debug.variableUseNaturalFormat": false,
+    "cortex-debug.variableUseNaturalFormat": true,
     "commentTranslate.hover.enabled": false
 }
