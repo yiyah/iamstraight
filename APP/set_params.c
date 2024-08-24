@@ -34,8 +34,8 @@ f32 f32ParseFloatFromString(const u8 *pdata, u8 len)
     s8 valSign = 1;
     u8 lenOfInteger = len - 3 - 2;      /*!< 3 is the length of the command part,
                                              2 is the length of the fractional part */
-    u16 integerPart = 0, fractionPart = 0;
-    u16 tenPower = 1;
+    u32 integerPart = 0, fractionPart = 0;
+    u32 tenPower = 1;
 
     /* Check if it is a negative value */
     if (pdata[3] == '-')
