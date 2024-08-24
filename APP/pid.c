@@ -93,10 +93,11 @@ f32 PPID_Output(f32 target, f32 actual, PID_Typedef *pid)
 #endif
 
     /* integral separation */
-    if (((pid->errSum > -pid->f32IntegralSepThreshold)
+    if ((((pid->errSum > -pid->f32IntegralSepThreshold)
         && (pid->errSum < 0.0F))
-    || ((pid->errSum < pid->f32IntegralSepThreshold)
+      || ((pid->errSum < pid->f32IntegralSepThreshold)
         && (pid->errSum > 0.0F)))
+    || (pid->u8Disable_Iout == 1))
     {
         pid->IOut = 0;
     }

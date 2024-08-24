@@ -10,17 +10,19 @@ typedef struct
 #if DEBUG_PID == 1
     /* for debug use */
     u8  T;                  /* sample time, unit: ms */
+    u8  u8Disable_Iout;
+    u8  u8Disable_Dout;
     f32 Kp;                 /* Need to initialize */
     f32 Ti;                 /* Need to initialize */
     f32 Td;                 /* Need to initialize */
-    f32 POut;
-    f32 IOut;
-    f32 DOut;
 #else /* DEBUG_PID == 1 */
     /* for release use */
     f32 Ki;                 /* Need to initialize */
     f32 kd;                 /* Need to initialize */
 #endif /* DEBUG_PID == 1 */
+    f32 POut;
+    f32 IOut;
+    f32 DOut;
     f32 errPrev;            /* for IPID, PPID */
     f32 errPPrev;           /* for IPID */
     f32 errSum;             /* for PPID */

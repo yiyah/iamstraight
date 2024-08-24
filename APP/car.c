@@ -155,7 +155,7 @@ void vSetParams(u8 cmd, f32 val)
         IAMSTRAIGHT.bodyPID.Kp = val*0.01;
         break;
     case 'w':
-        IAMSTRAIGHT.bodyPID.Ti = val;
+        IAMSTRAIGHT.bodyPID.Ti = val*0.01;
         break;
     case 'e':
         IAMSTRAIGHT.bodyPID.Td = val*0.01;
@@ -190,6 +190,7 @@ void car_Init()
     IAMSTRAIGHT.bodyPID.Kp = PID_BODY_Kp;
     IAMSTRAIGHT.bodyPID.Ti = PID_BODY_Ti;
     IAMSTRAIGHT.bodyPID.Td = PID_BODY_Td;
+    IAMSTRAIGHT.bodyPID.u8Disable_Iout = 1;
     IAMSTRAIGHT.bodyPID.f32OutputMax = PID_BODY_OUTPUT_MAX;
     IAMSTRAIGHT.bodyPID.f32IntegralSepThreshold = PID_THRESH_SEP_INTEG;
     PARAMS_vRegisterCallBackFunc(vSetParams);
@@ -206,7 +207,7 @@ f32 CAR_f32KeepStandUP(f32 f32target, f32 f32curPitch)
     f32 f32abs_curPitch = fabs(f32curPitch);
     if (f32abs_curPitch > 0.5F && f32abs_curPitch < 25.0F)
     {
-        f32res = -PPID_Output(f32target, f32curPitch, &IAMSTRAIGHT.bodyPID);
+    f32res = -PPID_Output(f32target, f32curPitch, &IAMSTRAIGHT.bodyPID);
     }
     else
     {
