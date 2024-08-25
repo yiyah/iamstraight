@@ -105,7 +105,14 @@ f32 PPID_Output(f32 target, f32 actual, PID_Typedef *pid)
     {
         /* keep pid->IOut */
     }
-
+    if (pid->errSum > 7200)
+    {
+        pid->errSum = 7200;
+    }
+    else if (pid->errSum < -7200)
+    {
+        pid->errSum = -7200;
+    }
     pid->errPrev = err;
     f32output = pid->POut + pid->IOut + pid->DOut;
     

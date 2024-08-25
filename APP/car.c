@@ -3,8 +3,6 @@
 #include "types.h"
 #include "set_params.h"
 #include "pid.h"
-#include "math.h"
-#include "math.h"
 
 /** @addtogroup APP
   * @{
@@ -61,10 +59,13 @@ typedef struct
  * @brief 速度环 PID 参数
  * 使用 临界比例法 获取的，1020是引起系统震荡的Ku, 100ms 是震荡时两个波峰间的时间间隔
  */
-#define     PID_VELOCITY_Kp     612.0F      /*!< 1020 * 0.6 */
-#define     PID_VELOCITY_Ti     50.0F       /*!< 100ms / 2 */
-#define     PID_VELOCITY_Td     12.5F       /*!< 100ms / 8 */
+// #define     PID_VELOCITY_Kp     612.0F      /*!< 1020 * 0.6 */
+// #define     PID_VELOCITY_Ti     50.0F       /*!< 100ms / 2 */
+// #define     PID_VELOCITY_Td     12.5F       /*!< 100ms / 8 */
 
+#define     PID_VELOCITY_Kp     109.0F      /*!< 1020 * 0.6 */
+#define     PID_VELOCITY_Ti     109000.0F       /*!< 100ms / 2 */
+#define     PID_VELOCITY_Td     4.0F       /*!< 100ms / 8 */
 #define     PID_OUTPUT_MAX      7200.0F     /*!< the motor PWM max pulse */
 
 /**
@@ -79,10 +80,10 @@ typedef struct
 /**
  * @brief 直立环 PID 参数
  */
-#define     PID_BODY_Kp                 0.0F
+#define     PID_BODY_Kp                 232.0F
 #define     PID_BODY_Ti                 100000000.0F
-#define     PID_BODY_Td                 0.0F
-#define     PID_BODY_OUTPUT_MAX         50.0F     /*!< the motor max pulse */
+#define     PID_BODY_Td                 65.49092F
+#define     PID_BODY_OUTPUT_MAX         7200.0F     /*!< the motor max pulse */
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -120,8 +121,8 @@ void control(const s16 l_targetPulse, const s16 r_targetPulse,
     IAMSTRAIGHT.rightWheel.pulse = r_curPulse;
     // calculate_speed();
 
-    *l_output = PPID_Output(l_targetPulse, IAMSTRAIGHT.leftWheel.pulse, &IAMSTRAIGHT.leftWheel.velocityPID);
-    *r_output = PPID_Output(r_targetPulse, IAMSTRAIGHT.rightWheel.pulse, &IAMSTRAIGHT.rightWheel.velocityPID);
+    *l_output = -PPID_Output(l_targetPulse, IAMSTRAIGHT.leftWheel.pulse, &IAMSTRAIGHT.leftWheel.velocityPID);
+    *r_output = -PPID_Output(r_targetPulse, IAMSTRAIGHT.rightWheel.pulse, &IAMSTRAIGHT.rightWheel.velocityPID);
 }
 
 void vSetParams(u8 cmd, f32 val)
@@ -132,6 +133,9 @@ void vSetParams(u8 cmd, f32 val)
     case 'P':
         IAMSTRAIGHT.leftWheel.velocityPID.Kp = val;
         IAMSTRAIGHT.rightWheel.velocityPID.Kp = val;
+        IAMSTRAIGHT.leftWheel.velocityPID.Ti = val*1000;  // 1000 = 5*200, 5: period; 200 is experience value
+        IAMSTRAIGHT.rightWheel.velocityPID.Ti = val*1000;
+
         break;
     case 'i':
     case 'I':
@@ -203,18 +207,7 @@ void car_app(const u8 *pdata, u8 len)
 
 f32 CAR_f32KeepStandUP(f32 f32target, f32 f32curPitch)
 {
-    f32 f32res = 0.0F;
-    f32 f32abs_curPitch = fabs(f32curPitch);
-    if (f32abs_curPitch > 0.5F && f32abs_curPitch < 25.0F)
-    {
-    f32res = -PPID_Output(f32target, f32curPitch, &IAMSTRAIGHT.bodyPID);
-    }
-    else
-    {
-        /* do nothing */
-    }
-
-    return f32res;
+    return -PPID_Output(f32target, f32curPitch, &IAMSTRAIGHT.bodyPID);
 }
 
 /**
